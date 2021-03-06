@@ -1,4 +1,4 @@
 /whatsapp-frontend/node_modules
 
 /whatsapp-backend/node_modules
-/whatsapp-backend/secrets.js
+/whatsapp-backend/config/secrets.js
