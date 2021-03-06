@@ -25,10 +25,10 @@ mongoose.connect(connect_url, {
 });
 
 const pusher = new Pusher({
-  appId: "1167395",
-  key: "1c8efe6427d0e8bf5a05",
-  secret: "244bbf8e6a8eeeb7e50e",
-  cluster: "eu",
+  appId: config.appId,
+  key: config.key,
+  secret: config.secret,
+  cluster: config.cluster,
   useTLS: true,
 });
 
