@@ -1,15 +1,32 @@
 import { Avatar } from "@material-ui/core";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import "../styles/sidebarChat.css";
+import db from "../firebase";
 
-function SidebarChat() {
-  return (
+function SidebarChat({ id, name, addNewChat }) {
+  const [seed, setSeed] = useState("");
+  useEffect(() => {
+    setSeed(Math.floor(Math.random() * 5000));
+  }, []);
+  const createChat = () => {
+    const roomName = prompt("Please enter name for chat");
+    if (roomName) {
+      db.collection("Rooms").add({
+        name: roomName,
+      });
+    }
+  };
+  return !addNewChat ? (
     <div className="sidebarChat">
-      <Avatar />
+      <Avatar src={`https://avatars.dicebear.com/api/human/${seed}.svg`} />
       <div className="sidebarChat_info">
-        <h2>Room name</h2>
+        <h2>{name}</h2>
         <p>This is last messages</p>
       </div>
+    </div>
+  ) : (
+    <div onClick={createChat} className="sidebarChat">
+      <h2>Add new Chat</h2>
     </div>
   );
 }
