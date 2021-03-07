@@ -1,4 +1,4 @@
 /whatsapp-frontend/node_modules
-
+/whatsapp-frontend/src/firebase.js
 /whatsapp-backend/node_modules
 /whatsapp-backend/config.js

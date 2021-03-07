@@ -2,7 +2,8 @@ import React, { useEffect, useState } from "react";
 import Pusher from "pusher-js";
 import "./App.css";
 import axios from "./axios";
-import { Sidebar, Chat } from "./components";
+import { Sidebar, Chat, Login } from "./components";
+import { Switch, BrowserRouter as Router, Route } from "react-router-dom";
 
 function App() {
   const [messages, setMessages] = useState([]);
@@ -25,12 +26,27 @@ function App() {
       channel.unsubscribe();
     };
   }, [messages]);
+
+  const [user, setUser] = useState(null);
   return (
     <div className="App">
-      <div className="app_body">
-        <Sidebar />
-        <Chat messages={messages} />
-      </div>
+      {!user ? (
+        <Login />
+      ) : (
+        <div className="app_body">
+          <Router>
+            <Sidebar />
+            <Switch>
+              <Route exact path="/">
+                <Chat messages={messages} />
+              </Route>
+              <Route path="/rooms/:roomId/:seed">
+                <Chat messages={messages} />
+              </Route>
+            </Switch>
+          </Router>
+        </div>
+      )}
     </div>
   );
 }
