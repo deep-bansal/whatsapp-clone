@@ -6,6 +6,7 @@ import axios from "../axios";
 
 function SidebarChat({ id, name, addNewChat }) {
   const [seed, setSeed] = useState("");
+  const [message, setMessage] = useState("");
   useEffect(() => {
     setSeed(Math.floor(Math.random() * 5000));
   }, []);
@@ -27,13 +28,18 @@ function SidebarChat({ id, name, addNewChat }) {
       );
     }
   };
+  useEffect(() => {
+    axios.get(`messages/sync/${id}`).then((response) => {
+      setMessage(response.data);
+    });
+  }, [id]);
   return !addNewChat ? (
     <Link to={`/rooms/${id}/${seed}`}>
       <div className="sidebarChat">
         <Avatar src={`https://avatars.dicebear.com/api/human/${seed}.svg`} />
         <div className="sidebarChat_info">
           <h2>{name}</h2>
-          <p>This is last messages</p>
+          <p>{message[message.length - 1]?.message}</p>
         </div>
       </div>
     </Link>

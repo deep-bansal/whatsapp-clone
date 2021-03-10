@@ -51,6 +51,7 @@ function Chat({ user }) {
 
   const sendMessage = async (e) => {
     e.preventDefault();
+    var currentdate = new Date();
     const config = {
       headers: {
         "Content-Type": "application/json",
@@ -61,7 +62,7 @@ function Chat({ user }) {
       {
         message: input,
         name: user.displayName,
-        timestamp: "demo",
+        timestamp: currentdate.getHours() + ":" + currentdate.getMinutes(),
         received: user.email,
         roomId: roomId,
       },
@@ -117,7 +118,7 @@ function Chat({ user }) {
             placeholder="Type a message"
           />
           <button onClick={sendMessage} type="submit">
-            Send a message{" "}
+            Send a message
           </button>
         </form>
         <MicOutlined />

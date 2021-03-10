@@ -37,10 +37,13 @@
   border-radius: 10px;
   background-color: #ffffff;
   margin-bottom: 30px;
+  box-sizing: border-box;
 }
 .chat_timestamp {
-  margin-left: 10px;
+  margin-left: 18px;
   font-size: xx-small;
+  position: relative;
+  top: 4px;
 }
 
 .chat_name {
