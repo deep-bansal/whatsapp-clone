@@ -1,47 +1,28 @@
-import React, { useEffect, useState } from "react";
-import Pusher from "pusher-js";
+import React, { useState } from "react";
 import "./App.css";
-import axios from "./axios";
-import { Sidebar, Chat, Login } from "./components";
+import { Sidebar, Chat, Login, Formal } from "./components";
 import { Switch, BrowserRouter as Router, Route } from "react-router-dom";
 
 function App() {
-  const [messages, setMessages] = useState([]);
-  useEffect(() => {
-    axios.get("/messages/sync").then((response) => {
-      setMessages(response.data);
-    });
-  }, []);
-  useEffect(() => {
-    const pusher = new Pusher("1c8efe6427d0e8bf5a05", {
-      cluster: "eu",
-    });
-    const channel = pusher.subscribe("messages");
-    channel.bind("inserted", function (newMessage) {
-      setMessages([...messages, newMessage]);
-    });
-
-    return () => {
-      channel.unbind_all();
-      channel.unsubscribe();
-    };
-  }, [messages]);
-
   const [user, setUser] = useState(null);
+  const addUser = (User) => {
+    setUser(User);
+    console.log(User);
+  };
   return (
     <div className="App">
       {!user ? (
-        <Login />
+        <Login addUser={addUser} />
       ) : (
         <div className="app_body">
           <Router>
-            <Sidebar />
+            <Sidebar user={user} />
             <Switch>
               <Route exact path="/">
-                <Chat messages={messages} />
+                <Formal />
               </Route>
               <Route path="/rooms/:roomId/:seed">
-                <Chat messages={messages} />
+                <Chat user={user} />
               </Route>
             </Switch>
           </Router>

@@ -1,20 +1,30 @@
 import { Avatar } from "@material-ui/core";
 import React, { useState, useEffect } from "react";
 import "../styles/sidebarChat.css";
-import db from "../firebase";
 import { Link } from "react-router-dom";
+import axios from "../axios";
 
 function SidebarChat({ id, name, addNewChat }) {
   const [seed, setSeed] = useState("");
   useEffect(() => {
     setSeed(Math.floor(Math.random() * 5000));
   }, []);
-  const createChat = () => {
+  const createChat = async (e) => {
+    e.preventDefault();
     const roomName = prompt("Please enter name for chat");
     if (roomName) {
-      db.collection("Rooms").add({
-        name: roomName,
-      });
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      };
+      await axios.post(
+        "/rooms/new",
+        {
+          name: roomName,
+        },
+        config
+      );
     }
   };
   return !addNewChat ? (
@@ -28,7 +38,7 @@ function SidebarChat({ id, name, addNewChat }) {
       </div>
     </Link>
   ) : (
-    <div onClick={createChat} className="sidebarChat">
+    <div onClick={(e) => createChat(e)} className="sidebarChat">
       <h2>Add new Chat</h2>
     </div>
   );

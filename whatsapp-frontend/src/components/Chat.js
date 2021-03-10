@@ -7,22 +7,45 @@ import {
   SearchOutlined,
 } from "@material-ui/icons";
 import axios from "../axios";
+import Pusher from "pusher-js";
 import React, { useEffect, useState } from "react";
 import "../styles/chat.css";
 import { useParams } from "react-router-dom";
-import db from "../firebase";
 
-function Chat({ messages }) {
+function Chat({ user }) {
   const [input, setInput] = useState("");
   const { roomId } = useParams();
   const { seed } = useParams();
   const [roomName, setRoomName] = useState("");
+  const [messages, setMessages] = useState([]);
 
   useEffect(() => {
     if (roomId) {
-      db.collection("Rooms")
-        .doc(roomId)
-        .onSnapshot((snapshot) => setRoomName(snapshot.data().name));
+      axios.get(`messages/sync/${roomId}`).then((response) => {
+        setMessages(response.data);
+      });
+    }
+  }, [roomId]);
+  useEffect(() => {
+    const pusher = new Pusher("1c8efe6427d0e8bf5a05", {
+      cluster: "eu",
+    });
+    const channel = pusher.subscribe("messages");
+    channel.bind("inserted", function (newMessage) {
+      setMessages([...messages, newMessage]);
+    });
+
+    return () => {
+      channel.unbind_all();
+      channel.unsubscribe();
+    };
+  }, [messages]);
+
+  useEffect(() => {
+    if (roomId) {
+      axios.get(`/room/${roomId}`).then((response) => {
+        setRoomName(response.data[0].name);
+      });
     }
   }, [roomId]);
 
@@ -37,9 +60,10 @@ function Chat({ messages }) {
       "messages/new",
       {
         message: input,
-        name: "deep bansal",
+        name: user.displayName,
         timestamp: "demo",
-        received: true,
+        received: user.email,
+        roomId: roomId,
       },
       config
     );
@@ -70,7 +94,9 @@ function Chat({ messages }) {
           return (
             <p
               key={idx}
-              className={`chat_message ${message.received && "chat_receiver"}`}
+              className={`chat_message ${
+                message.received === user.email ? "chat_receiver" : ""
+              }`}
             >
               <span className="chat_name">{message.name}</span>
               {message.message}

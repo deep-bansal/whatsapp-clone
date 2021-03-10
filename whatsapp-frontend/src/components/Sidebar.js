@@ -5,28 +5,20 @@ import DonutLargeIcon from "@material-ui/icons/DonutLarge";
 import MoreVertIcon from "@material-ui/icons/MoreVert";
 import { Avatar, IconButton } from "@material-ui/core";
 import { SearchOutlined } from "@material-ui/icons";
-import db from "../firebase";
+import axios from "../axios";
 import { SidebarChat } from "./";
 
-function Sidebar() {
+function Sidebar({ user }) {
   const [rooms, setRooms] = useState([]);
   useEffect(() => {
-    const unsubscribe = db.collection("Rooms").onSnapshot((snapshot) => {
-      setRooms(
-        snapshot.docs.map((doc) => ({
-          id: doc.id,
-          data: doc.data(),
-        }))
-      );
+    axios.get("/rooms").then((response) => {
+      setRooms(response.data);
     });
-    return () => {
-      unsubscribe();
-    };
-  }, []);
+  }, [rooms]);
   return (
     <div className="sidebar">
       <div className="sidebar_header">
-        <Avatar />
+        <Avatar src={user.photoURL} />
         <div className="sidebar_headerRight">
           <IconButton>
             <DonutLargeIcon />
@@ -48,7 +40,7 @@ function Sidebar() {
       <div className="sidebar_chats">
         <SidebarChat addNewChat />
         {rooms.map((room) => (
-          <SidebarChat key={room.id} id={room.id} name={room.data.name} />
+          <SidebarChat key={room._id} id={room._id} name={room.name} />
         ))}
       </div>
     </div>

@@ -2,12 +2,12 @@ import { Button } from "@material-ui/core";
 import React from "react";
 import "../styles/login.css";
 import { auth, provider } from "../firebase";
-function Login() {
+function Login({ addUser }) {
   const signIn = () => {
     auth
       .signInWithPopup(provider)
       .then((result) => {
-        console.log(result);
+        addUser(result.user);
       })
       .catch((err) => {
         alert(err.message);
@@ -16,7 +16,10 @@ function Login() {
   return (
     <div className="login">
       <div className="login_container">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/479px-WhatsApp.svg.png" />
+        <img
+          src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/479px-WhatsApp.svg.png"
+          alt="whatsapp-logo"
+        />
         <div className="login_text">
           <h1>Sign in to whatsapp</h1>
         </div>

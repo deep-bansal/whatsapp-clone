@@ -2,6 +2,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const config = require("./config");
 const Messages = require("./models/dbMessages");
+const Rooms = require("./models/rooms");
 const Pusher = require("pusher");
 const PORT = 9000;
 const app = express();
@@ -46,6 +47,7 @@ db.once("open", () => {
         message: messageDetails.message,
         timestamp: messageDetails.timestamp,
         received: messageDetails.received,
+        roomId: messageDetails.roomId,
       });
     } else {
       console.log("Error tiggering Pusher");
@@ -53,12 +55,8 @@ db.once("open", () => {
   });
 });
 
-app.get("/", (req, res) => {
-  return res.status(200).send("Hello World!");
-});
-
-app.get("/messages/sync", (req, res) => {
-  Messages.find((err, data) => {
+app.get("/messages/sync/:roomId", (req, res) => {
+  Messages.find({ roomId: req.params.roomId }, (err, data) => {
     if (err) {
       return res.status(500).send(err);
     } else {
@@ -70,6 +68,37 @@ app.get("/messages/sync", (req, res) => {
 app.post("/messages/new", (req, res) => {
   const message = req.body;
   Messages.create(message, (err, data) => {
+    if (err) {
+      return res.status(500).send(err);
+    } else {
+      return res.status(200).send(data);
+    }
+  });
+});
+
+app.post("/rooms/new", (req, res) => {
+  const room = req.body;
+  Rooms.create(room, (err, data) => {
+    if (err) {
+      return res.status(500).send(err);
+    } else {
+      return res.status(200).send(data);
+    }
+  });
+});
+
+app.get("/rooms", (req, res) => {
+  Rooms.find((err, data) => {
+    if (err) {
+      return res.status(500).send(err);
+    } else {
+      return res.status(200).send(data);
+    }
+  });
+});
+
+app.get("/room/:roomId", (req, res) => {
+  Rooms.find({ _id: req.params.roomId }, (err, data) => {
     if (err) {
       return res.status(500).send(err);
     } else {
